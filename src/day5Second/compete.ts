@@ -1,4 +1,5 @@
-import { windLines } from '../../assets/day5/winds';
+// import { windLines } from '../../assets/day5/winds';
+import { readFileToArray } from '../../utils/read_file';
 
 const GROUND_SQUARE_UNITS = 1000;
 
@@ -102,7 +103,9 @@ function init2dArray(floor: Array<Array<Measure>>): void {
 
 export function runCompete(): void {
 	let oceanFloor: Array<Array<Measure>> = [];
-	let windLinesCopy = Object.assign([], windLines);
+
+	const windLinesFromFile = readFileToArray('day5/winds.txt');
+	let windLinesCopy = Object.assign([], windLinesFromFile);
 
 	init2dArray(oceanFloor);
 	while (windLinesCopy.length) {

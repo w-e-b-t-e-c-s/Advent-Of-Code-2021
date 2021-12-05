@@ -10,7 +10,7 @@ import { runCompete as runDay5First } from './src/day5First/compete';
 import { runCompete as runDay5Second } from './src/day5Second/compete';
 
 function main(): void {
-	console.log('run');
+	console.log(`run from ${process.cwd()}`);
 	runDay1First();
 	runDay1Second();
 	runDay2First();
