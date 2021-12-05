@@ -26,12 +26,12 @@ function drawLine(line: string, floor: Array<Array<Measure>>): void {
 		if (startPointXY.x <= endPointXY.x) {
 			if (startPointXY.y <= endPointXY.y) {
 				for (let coordCount = 0; coordCount <= projectedLength; coordCount++) {
-					floor[startPointXY.x + coordCount][startPointXY.y + coordCount].strength++;
+					floor[startPointXY.y + coordCount][startPointXY.x + coordCount].strength++;
 				}
 				return;
 			} else {
 				for (let coordCount = 0; coordCount <= projectedLength; coordCount++) {
-					floor[startPointXY.x + coordCount][startPointXY.y - coordCount].strength++;
+					floor[startPointXY.y - coordCount][startPointXY.x + coordCount].strength++;
 				}
 				return;
 			}
@@ -39,12 +39,12 @@ function drawLine(line: string, floor: Array<Array<Measure>>): void {
 		if (startPointXY.x > endPointXY.x) {
 			if (startPointXY.y <= endPointXY.y) {
 				for (let coordCount = 0; coordCount <= projectedLength; coordCount++) {
-					floor[startPointXY.x - coordCount][startPointXY.y + coordCount].strength++;
+					floor[startPointXY.y + coordCount][startPointXY.x - coordCount].strength++;
 				}
 				return;
 			} else {
 				for (let coordCount = 0; coordCount <= projectedLength; coordCount++) {
-					floor[startPointXY.x - coordCount][startPointXY.y - coordCount].strength++;
+					floor[startPointXY.y - coordCount][startPointXY.x - coordCount].strength++;
 				}
 				return;
 			}
@@ -52,26 +52,26 @@ function drawLine(line: string, floor: Array<Array<Measure>>): void {
 	}
 	if (startPointXY.x === endPointXY.x) {
 		if (startPointXY.y <= endPointXY.y) {
-			for (let rowCount = startPointXY.y; rowCount <= endPointXY.y; rowCount++) {
-				floor[startPointXY.x][rowCount].strength++;
+			for (let columnCount = startPointXY.y; columnCount <= endPointXY.y; columnCount++) {
+				floor[columnCount][startPointXY.x].strength++;
 			}
 			return;
 		} else {
-			for (let rowCount = endPointXY.y; rowCount <= startPointXY.y; rowCount++) {
-				floor[startPointXY.x][rowCount].strength++;
+			for (let columnCount = endPointXY.y; columnCount <= startPointXY.y; columnCount++) {
+				floor[columnCount][startPointXY.x].strength++;
 			}
 			return;
 		}
 	}
 	if (startPointXY.y === endPointXY.y) {
 		if (startPointXY.x <= endPointXY.x) {
-			for (let columnCount = startPointXY.x; columnCount <= endPointXY.x; columnCount++) {
-				floor[columnCount][startPointXY.y].strength++;
+			for (let rowCount = startPointXY.x; rowCount <= endPointXY.x; rowCount++) {
+				floor[startPointXY.y][rowCount].strength++;
 			}
 			return;
 		} else {
-			for (let columnCount = endPointXY.x; columnCount <= startPointXY.x; columnCount++) {
-				floor[columnCount][startPointXY.y].strength++;
+			for (let rowCount = endPointXY.x; rowCount <= startPointXY.x; rowCount++) {
+				floor[startPointXY.y][rowCount].strength++;
 			}
 			return;
 		}
@@ -82,7 +82,7 @@ function countOverlaps(floor: Array<Array<Measure>>): number {
 	let sum: number = 0;
 	for (let rows = 0; rows < GROUND_SQUARE_UNITS; rows++) {
 		for (let columns = 0; columns < GROUND_SQUARE_UNITS; columns++) {
-			if (floor[rows][columns].strength > 1) {
+			if (floor[columns][rows].strength > 1) {
 				sum++;
 			}
 		}
