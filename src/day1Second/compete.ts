@@ -18,5 +18,5 @@ export function runCompete(): void {
 			numberOfIncreases++;
 		}
 	}
-	console.log('Result = ' + numberOfIncreases);
+	console.log('[Day 01 Second] Result = ' + numberOfIncreases);
 }

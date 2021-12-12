@@ -20,5 +20,5 @@ export function runCompete(): void {
 				throw new Error('Unknown movement');
 		}
 	}
-	console.log('Result = ' + xPosition * depth);
+	console.log('[Day 02 First] Result = ' + xPosition * depth);
 }

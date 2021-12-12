@@ -27,5 +27,5 @@ export function runCompete(): void {
 	}
 
 	let numberOfFishes = actualFishes.length;
-	console.log('Result = ' + numberOfFishes);
+	console.log('[Day 06 First] Result = ' + numberOfFishes);
 }

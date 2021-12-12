@@ -36,5 +36,5 @@ export function runCompete(): void {
 	);
 
 	const totalRecognizedDigits = digitsCountArray[1] + digitsCountArray[7] + digitsCountArray[4] + digitsCountArray[8];
-	console.log('Result = ' + totalRecognizedDigits);
+	console.log('[Day 08 First] Result = ' + totalRecognizedDigits);
 }

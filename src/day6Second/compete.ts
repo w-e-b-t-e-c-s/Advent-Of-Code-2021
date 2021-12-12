@@ -33,6 +33,9 @@ export function runCompete(): void {
 	}
 
 	console.log(
-		`Result after ${NUMBER_OF_DAYS_SIMULATED} days = ${ofEachState.reduce((acc, number) => acc + number, 0)}`
+		`[Day 06 Second] Result after ${NUMBER_OF_DAYS_SIMULATED} days = ${ofEachState.reduce(
+			(acc, number) => acc + number,
+			0
+		)}`
 	);
 }

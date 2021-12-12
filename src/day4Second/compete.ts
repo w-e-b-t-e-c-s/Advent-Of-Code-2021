@@ -74,12 +74,11 @@ export function runCompete(): void {
 		allBoards = processedBoards;
 	}
 
-	console.log('Ended on move ' + currentMove);
+	// console.log('Ended on move ' + currentMove);
 	if (!allBoards.length) {
 		sumOfUnmarked = sumUpUnmarkedCells(lastWinnerBoard!);
 	} else {
 		throw Error('More than one board uncompleted');
 	}
-	console.log('sumOfUnmarked = ' + sumOfUnmarked);
-	console.log('Result = ' + sumOfUnmarked * currentMove);
+	console.log('[Day 04 Second] Result = ' + sumOfUnmarked * currentMove);
 }

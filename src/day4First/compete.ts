@@ -71,5 +71,5 @@ export function runCompete(): void {
 	} else {
 		throw Error('No winner board found');
 	}
-	console.log('Result = ' + sumOfUnmarked * currentMove);
+	console.log('[Day 04 First] Result = ' + sumOfUnmarked * currentMove);
 }

@@ -51,5 +51,5 @@ export function runCompete(): void {
 	gammaRate = parseInt(gammaArray.join(''), 2);
 	epsylonRate = parseInt(epsylonArray.join(''), 2);
 	console.log();
-	console.log('Result = ' + gammaRate * epsylonRate);
+	console.log('[Day 03 First] Result = ' + gammaRate * epsylonRate);
 }

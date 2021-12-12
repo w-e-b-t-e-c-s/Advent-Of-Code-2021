@@ -119,5 +119,5 @@ export function runCompete(): void {
 		result += +outputResult;
 	});
 
-	console.log('Result = ' + result);
+	console.log('[Day 08 Second] Result = ' + result);
 }

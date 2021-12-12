@@ -114,5 +114,5 @@ export function runCompete(): void {
 	}
 
 	let sumOverlaps = countOverlaps(oceanFloor);
-	console.log('Result = ' + sumOverlaps);
+	console.log('[Day 05 Second] Result = ' + sumOverlaps);
 }

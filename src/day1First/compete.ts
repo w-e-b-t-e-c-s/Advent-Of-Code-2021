@@ -9,5 +9,5 @@ export function runCompete(): void {
 		}
 		previous = value;
 	});
-	console.log('Result = ' + numberOfIncreases);
+	console.log('[Day 01 First] Result = ' + numberOfIncreases);
 }

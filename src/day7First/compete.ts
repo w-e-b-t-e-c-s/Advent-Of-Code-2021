@@ -23,5 +23,5 @@ export function runCompete(): void {
 		simulatedPositions[position] = fuel;
 	}
 
-	console.log('Result = ' + lowestValue(simulatedPositions));
+	console.log('[Day 07 First] Result = ' + lowestValue(simulatedPositions));
 }

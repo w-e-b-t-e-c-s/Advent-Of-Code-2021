@@ -66,5 +66,5 @@ export function runCompete(): void {
 
 	console.log('Oxygen rate = ' + oxygenRate);
 	console.log('CO2 scrubber rate = ' + scrubberRate);
-	console.log('Result = ' + oxygenRate * scrubberRate);
+	console.log('[Day 03 Second] Result = ' + oxygenRate * scrubberRate);
 }
