@@ -2,9 +2,10 @@
 	"name": "adventofcode2021",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.ts",
+	"main": "main.ts",
 	"scripts": {
-		"dev": "node_modules/.bin/ts-node main.ts",
+		"build": "tsc",
+		"dev": "node_modules/.bin/ts-node src/main.ts",
 		"test": "npm run test"
 	},
 	"author": "",
