@@ -1,6 +1,6 @@
 import { readFileToArray } from '../../utils/read_file';
 
-const MAX_STEPS_AHEAD = 30;
+const MAX_STEPS_AHEAD = 15;
 
 type Coordinate = {
 	x: number;
@@ -8,57 +8,118 @@ type Coordinate = {
 };
 
 enum MoveDirection {
-	'DOWN',
-	'RIGHT'
+	'UNDEFINED' = 'UNDEFINED',
+	'START' = 'START',
+	'DOWN' = 'DOWN',
+	'RIGHT' = 'RIGHT',
+	'UP' = 'UP',
+	'LEFT' = 'LEFT'
 }
 
 type ScoreForMove = {
 	score: number;
 	move: MoveDirection;
+	x: number;
+	y: number;
+};
+
+type FloorPosition = {
+	risk: number;
+	reached: number;
+	x: number;
+	y: number;
 };
 
 let cavernMaxX = 0;
 let cavernMaxY = 0;
 let riskLevelsFromFile: Array<string>;
-let cavernFloor: Array<Array<number>> = [];
+let cavernFloor: Array<Array<FloorPosition>> = [];
 let submarinePos: Coordinate = { x: 0, y: 0 };
 
 function init2dArray(): void {
 	for (let row = 0; row < cavernMaxY; row++) {
-		let riskLevelsRow = riskLevelsFromFile[row].split('').map((riskLevel) => +riskLevel);
+		let riskLevelsRow = riskLevelsFromFile[row]
+			.split('')
+			.map((riskLevel, index) => ({ risk: +riskLevel, reached: 0, x: index, y: row }));
 		cavernFloor.push(riskLevelsRow);
 	}
 }
 
-function display2dArray(): void {
-	cavernFloor.map((line) => console.log(line.reduce((acc, column) => acc + column, '')));
+function display2dArray(floor: Array<Array<FloorPosition>>): void {
+	floor.map((line) => console.log(line.reduce((acc, column) => acc + (column.reached + ''), '')));
+	console.log('---');
 }
 
-function getMoveScore(currentX: number, currentY: number, depth: number, score: number): number {
+function deepClone<T>(obj: T): T {
+	return JSON.parse(JSON.stringify(obj)) as T;
+}
+
+function getMoveScore(
+	direction: MoveDirection,
+	currentX: number,
+	currentY: number,
+	depth: number,
+	score: number,
+	path: Array<Array<FloorPosition>>,
+	bestScore: ScoreForMove
+): void {
 	// console.log(`Enter isNextMoveX with depth = ${depth}, currentX = ${currentX}, currentY = ${currentY}`);
+	if (currentY === cavernMaxY || currentY === -1) {
+		// console.log(`Reached line border: currentY = ${currentY}`);
+		return;
+	}
+	if (currentX === cavernMaxX || currentX === -1) {
+		// console.log(`Reached column border: currentX = ${currentX}`);
+		return;
+	}
+	const scoreAtThisPos = cavernFloor[currentY][currentX].risk;
+	// if (scoreAtThisPos === 9) {
+	// 	return;
+	// }
+	if (path[currentY][currentX].reached) {
+		return;
+	}
 	if (currentY === cavernMaxY - 1 && currentX === cavernMaxX - 1) {
 		// console.log(`Reached end`);
-		return score;
+		if (score < bestScore.score && bestScore.x + bestScore.y <= currentX + currentY) {
+			bestScore.move = direction;
+			bestScore.score = score;
+			bestScore.x = currentX;
+			bestScore.y = currentY;
+		}
+		return;
 	}
 	if (depth === 0) {
 		// console.log(`Reached search depth 0 with score = ${score}`);
-		return score;
+		if (
+			// score < bestScore.score
+			score < bestScore.score &&
+			((submarinePos.x <= currentX && submarinePos.y < currentY) ||
+				(submarinePos.x < currentX && submarinePos.y <= currentY)) &&
+			bestScore.x + bestScore.y <= currentX + currentY + 1
+		) {
+			bestScore.move = direction;
+			bestScore.score = score;
+			bestScore.x = currentX;
+			bestScore.y = currentY;
+		}
+		return;
 	}
-	if (currentY === cavernMaxY) {
-		// console.log(`Reached last line: currentY = ${currentY}`);
-		return Number.POSITIVE_INFINITY;
-	}
-	if (currentX === cavernMaxX) {
-		// console.log(`Reached last column: currentX = ${currentX}`);
-		return Number.POSITIVE_INFINITY;
+	score += scoreAtThisPos;
+	if (
+		score >= bestScore.score ||
+		(!(submarinePos.x <= currentX && submarinePos.y < currentY) &&
+			!(submarinePos.x < currentX && submarinePos.y <= currentY))
+	) {
+		return;
 	}
 	depth--;
-	score += cavernFloor[currentY][currentX];
-	let scoreForGoingRight = getMoveScore(currentX + 1, currentY, depth, score);
-	// console.log(`scoreForGoingRight = ${scoreForGoingRight}`);
-	let scoreForGoingDown = getMoveScore(currentX, currentY + 1, depth, score);
-	// console.log(`scoreForGoingDown = ${scoreForGoingDown}`);
-	return Math.min(scoreForGoingRight, scoreForGoingDown);
+	path[currentY][currentX].reached = depth + 1;
+	getMoveScore(direction, currentX + 1, currentY, depth, score, deepClone(path), bestScore);
+	getMoveScore(direction, currentX, currentY + 1, depth, score, deepClone(path), bestScore);
+	getMoveScore(direction, currentX - 1, currentY, depth, score, deepClone(path), bestScore);
+	getMoveScore(direction, currentX, currentY - 1, depth, score, deepClone(path), bestScore);
+	return;
 }
 
 export function runCompete(): void {
@@ -68,27 +129,80 @@ export function runCompete(): void {
 
 	console.log(`cavernMaxX = ${cavernMaxX}, cavernMaxY = ${cavernMaxY}`);
 	init2dArray();
-	display2dArray();
+	// display2dArray(cavernFloor);
 
 	let totalRisk = 0;
+	let step = 0;
+	submarinePos.x = 0;
+	submarinePos.y = 0;
+	cavernFloor[submarinePos.y][submarinePos.x].reached = 1;
 	while (!(submarinePos.x === cavernMaxX - 1 && submarinePos.y === cavernMaxY - 1)) {
-		let scoreMoveToColRight = getMoveScore(submarinePos.x + 1, submarinePos.y, MAX_STEPS_AHEAD, 0);
-		let scoreMoveToLineDown = getMoveScore(submarinePos.x, submarinePos.y + 1, MAX_STEPS_AHEAD, 0);
-		let riskNextPos;
-		if (scoreMoveToColRight <= scoreMoveToLineDown) {
-			riskNextPos = cavernFloor[submarinePos.y][submarinePos.x + 1];
-			// console.log(
-			// 	`Moved right with risk level ${riskNextPos} (x: ${submarinePos.x}, y: ${submarinePos.y}), total ${totalRisk}`
-			// );
-			submarinePos.x++;
-		} else {
-			riskNextPos = cavernFloor[submarinePos.y + 1][submarinePos.x];
-			// console.log(
-			// 	`Moved down with risk level ${riskNextPos} (x: ${submarinePos.x}, y: ${submarinePos.y}), total ${totalRisk}`
-			// );
-			submarinePos.y++;
+		let bestScore = {
+			move: MoveDirection.UNDEFINED,
+			score: Number.POSITIVE_INFINITY,
+			x: 0,
+			y: 0
+		};
+		getMoveScore(
+			MoveDirection.RIGHT,
+			submarinePos.x + 1,
+			submarinePos.y,
+			MAX_STEPS_AHEAD,
+			0,
+			deepClone(cavernFloor),
+			bestScore
+		);
+		getMoveScore(
+			MoveDirection.DOWN,
+			submarinePos.x,
+			submarinePos.y + 1,
+			MAX_STEPS_AHEAD,
+			0,
+			deepClone(cavernFloor),
+			bestScore
+		);
+		getMoveScore(
+			MoveDirection.LEFT,
+			submarinePos.x - 1,
+			submarinePos.y,
+			MAX_STEPS_AHEAD,
+			0,
+			deepClone(cavernFloor),
+			bestScore
+		);
+		getMoveScore(
+			MoveDirection.UP,
+			submarinePos.x,
+			submarinePos.y - 1,
+			MAX_STEPS_AHEAD,
+			0,
+			deepClone(cavernFloor),
+			bestScore
+		);
+		console.log(
+			`Move ${bestScore.move.toString()} to (x: ${bestScore.x}, y: ${bestScore.y}, risk: ${cavernFloor[
+				submarinePos.y
+			][submarinePos.x].risk}), total ${totalRisk}`
+		);
+		cavernFloor[submarinePos.y][submarinePos.x].reached = ++step;
+		switch (bestScore.move) {
+			case MoveDirection.RIGHT:
+				submarinePos.x += 1;
+				break;
+			case MoveDirection.DOWN:
+				submarinePos.y += 1;
+				break;
+			case MoveDirection.LEFT:
+				submarinePos.x -= 1;
+				break;
+			case MoveDirection.UP:
+				submarinePos.y -= 1;
+				break;
+			default:
+				throw new Error('Direction to move not specified');
 		}
-		totalRisk += riskNextPos;
+		console.log(`Current pos (x: ${submarinePos.x}, y: ${submarinePos.y})`);
+		totalRisk += cavernFloor[submarinePos.y][submarinePos.x].risk;
 	}
 	console.log(`[Day 15 First] Result = ${totalRisk}`);
 }
